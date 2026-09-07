@@ -1,0 +1,144 @@
+<!-- Particules flottantes de fond -->
+<div class="particles">
+  <div class="particle"
+       *ngFor="let p of [1,2,3,4,5,6,7,8,9,10,11,12]"
+       [style.left.%]="p * 8"
+       [style.animation-delay.s]="p * 0.4">
+    <i class="fa-solid fa-star-of-life"></i>
+  </div>
+</div>
+
+<!-- ==================== PAGE INVITATION ==================== -->
+<div class="page" *ngIf="step() === 'invite'" @fadeInUp>
+
+  <!-- Header -->
+  <div class="header-decor">
+    <i class="fa-solid fa-heart petal"></i>
+    <i class="fa-solid fa-sparkles petal"></i>
+    <i class="fa-solid fa-heart petal"></i>
+    <i class="fa-solid fa-sparkles petal"></i>
+    <i class="fa-solid fa-heart petal"></i>
+  </div>
+
+  <!-- Carte principale -->
+  <div class="card" @slideIn>
+    <div class="card-inner">
+
+      <div class="heart-icon">
+        <i class="fa-solid fa-heart"></i>
+      </div>
+
+      <p class="subtitle">Une petite question pour toi...</p>
+      <h1 class="title">
+        Lael,<br>
+        <span class="highlight">tu veux bien</span><br>
+        qu'on se retrouve<br>
+        <span class="day-badge">
+          <i class="fa-solid fa-calendar-days"></i>
+          ce vendredi ?
+        </span>
+      </h1>
+
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-icon"><i class="fa-solid fa-calendar-day"></i></span>
+          <span class="detail-text">Vendredi soir</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-icon"><i class="fa-solid fa-user-group"></i></span>
+          <span class="detail-text">Juste nous deux</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-icon"><i class="fa-solid fa-champagne-glasses"></i></span>
+          <span class="detail-text">Un bon moment</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-icon"><i class="fa-solid fa-heart"></i></span>
+          <span class="detail-text">Bonne compagnie</span>
+        </div>
+      </div>
+
+      <p class="message">
+        Je te promets qu'on va bien s'amuser<br>
+        Qu'est-ce que tu en dis ?
+      </p>
+
+      <!-- Boutons -->
+      <div class="buttons">
+
+        <!-- OUI -->
+        <button class="btn btn-yes" (click)="accept()">
+          <i class="fa-solid fa-check"></i>
+          Oui bien sûr !
+        </button>
+
+        <!-- NON — fuit la souris via transform translate -->
+        <button
+          class="btn btn-no"
+          [style.transform]="'translate(' + noBtnX() + 'px, ' + noBtnY() + 'px)'">
+          <i class="fa-solid fa-xmark"></i>
+          Non
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <p class="footer-hint">
+    <i class="fa-solid fa-arrow-up"></i>
+    Clique sur le bon bouton
+  </p>
+</div>
+
+
+<!-- ==================== PAGE OUI ==================== -->
+<div class="page page-yes" *ngIf="step() === 'oui'" @popIn>
+
+  <!-- Confettis -->
+  <div class="confetti-container" *ngIf="showConfetti()">
+    <span class="confetti-piece"
+          *ngFor="let c of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]"
+          [style.left.%]="c * 5"
+          [style.animation-delay.ms]="c * 80"
+          [style.animation-duration.ms]="1500 + c * 100">
+      <i [class]="confettiIcons[c % confettiIcons.length]"></i>
+    </span>
+  </div>
+
+  <div class="card card-yes" @slideIn>
+
+    <div class="big-icon" [@heartbeat]="heartState()">
+      <i class="fa-solid fa-heart"></i>
+    </div>
+
+    <h1 class="yes-title">C'est officiel !</h1>
+    <p class="yes-sub">Tu as fait le bon choix Lael</p>
+
+    <div class="yes-message">
+      <p>On se retrouve</p>
+      <div class="date-badge">
+        <i class="fa-solid fa-calendar-check date-icon"></i>
+        <span class="date-text">Ce Vendredi !</span>
+      </div>
+      <p>J'ai hâte de passer ce moment avec toi</p>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-item detail-yes">
+        <span class="detail-icon"><i class="fa-solid fa-location-dot"></i></span>
+        <span class="detail-text">À définir ensemble</span>
+      </div>
+      <div class="detail-item detail-yes">
+        <span class="detail-icon"><i class="fa-solid fa-clock"></i></span>
+        <span class="detail-text">Vendredi soir</span>
+      </div>
+    </div>
+
+    <p class="yes-footer">
+      <i class="fa-solid fa-star"></i>
+      Prépare-toi pour une belle soirée
+      <i class="fa-solid fa-star"></i>
+    </p>
+  </div>
+</div>
