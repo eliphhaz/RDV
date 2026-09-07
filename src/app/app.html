@@ -10,17 +10,6 @@
 
 <!-- ==================== PAGE INVITATION ==================== -->
 <div class="page" *ngIf="step() === 'invite'" @fadeInUp>
-
-  <!-- Header -->
-  <div class="header-decor">
-    <i class="fa-solid fa-heart petal"></i>
-    <i class="fa-solid fa-sparkles petal"></i>
-    <i class="fa-solid fa-heart petal"></i>
-    <i class="fa-solid fa-sparkles petal"></i>
-    <i class="fa-solid fa-heart petal"></i>
-  </div>
-
-  <!-- Carte principale -->
   <div class="card" @slideIn>
     <div class="card-inner">
 
@@ -29,10 +18,11 @@
       </div>
 
       <p class="subtitle">Une petite question pour toi...</p>
+
       <h1 class="title">
-        Lael,<br>
-        <span class="highlight">tu veux bien</span><br>
-        qu'on se retrouve<br>
+        Lael,
+        <span class="highlight">tu veux bien</span>
+        qu'on se retrouve
         <span class="day-badge">
           <i class="fa-solid fa-calendar-days"></i>
           ce vendredi ?
@@ -59,43 +49,32 @@
       </div>
 
       <p class="message">
-        Je te promets qu'on va bien s'amuser<br>
+        Je te promets qu'on va bien s'amuser —
         Qu'est-ce que tu en dis ?
       </p>
 
-      <!-- Boutons -->
       <div class="buttons">
-
-        <!-- OUI -->
         <button class="btn btn-yes" (click)="accept()">
           <i class="fa-solid fa-check"></i>
           Oui bien sûr !
         </button>
 
-        <!-- NON — fuit la souris via transform translate -->
         <button
           class="btn btn-no"
           [style.transform]="'translate(' + noBtnX() + 'px, ' + noBtnY() + 'px)'">
           <i class="fa-solid fa-xmark"></i>
           Non
         </button>
-
       </div>
 
     </div>
   </div>
-
-  <p class="footer-hint">
-    <i class="fa-solid fa-arrow-up"></i>
-    Clique sur le bon bouton
-  </p>
 </div>
 
 
 <!-- ==================== PAGE OUI ==================== -->
 <div class="page page-yes" *ngIf="step() === 'oui'" @popIn>
 
-  <!-- Confettis -->
   <div class="confetti-container" *ngIf="showConfetti()">
     <span class="confetti-piece"
           *ngFor="let c of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]"
@@ -107,7 +86,6 @@
   </div>
 
   <div class="card card-yes" @slideIn>
-
     <div class="big-icon" [@heartbeat]="heartState()">
       <i class="fa-solid fa-heart"></i>
     </div>
