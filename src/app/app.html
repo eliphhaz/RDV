@@ -8,6 +8,80 @@
   </div>
 </div>
 
+
+<!-- ==================== PAGE FORMULAIRE ==================== -->
+<div class="page" *ngIf="step() === 'form'" @fadeInUp>
+  <div class="card" @slideIn>
+    <div class="card-inner">
+
+      <div class="heart-icon">
+        <i class="fa-solid fa-heart"></i>
+      </div>
+
+      <p class="subtitle">Avant de commencer...</p>
+      <h1 class="title">
+        Laisse-moi tes infos
+        <span class="day-badge">
+          <i class="fa-solid fa-lock"></i>
+          juste entre nous
+        </span>
+      </h1>
+
+      <p class="message">Prénom, email et numéro pour recevoir ta confirmation</p>
+
+      <div class="form-group">
+        <div class="input-wrapper">
+          <i class="fa-solid fa-signature input-icon"></i>
+          <input
+            type="text"
+            class="form-input"
+            placeholder="Ton prénom"
+            [(ngModel)]="prenom"
+            maxlength="30"
+            (keyup.enter)="submitForm()"
+          />
+        </div>
+
+        <div class="input-wrapper">
+          <i class="fa-solid fa-envelope input-icon"></i>
+          <input
+            type="email"
+            class="form-input"
+            placeholder="Ton adresse email"
+            [(ngModel)]="email"
+            maxlength="60"
+            (keyup.enter)="submitForm()"
+          />
+        </div>
+
+        <div class="input-wrapper">
+          <i class="fa-solid fa-phone input-icon"></i>
+          <input
+            type="tel"
+            class="form-input"
+            placeholder="Ton numéro de téléphone"
+            [(ngModel)]="numero"
+            maxlength="15"
+            (keyup.enter)="submitForm()"
+          />
+        </div>
+
+        <p class="form-error" *ngIf="formError">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          {{ formError }}
+        </p>
+      </div>
+
+      <button class="btn btn-yes btn-wide" (click)="submitForm()">
+        <i class="fa-solid fa-arrow-right"></i>
+        Continuer
+      </button>
+
+    </div>
+  </div>
+</div>
+
+
 <!-- ==================== PAGE INVITATION ==================== -->
 <div class="page" *ngIf="step() === 'invite'" @fadeInUp>
   <div class="card" @slideIn>
@@ -18,9 +92,8 @@
       </div>
 
       <p class="subtitle">Une petite question pour toi...</p>
-
       <h1 class="title">
-        Lael,
+        {{ prenom }},
         <span class="highlight">tu veux bien</span>
         qu'on se retrouve
         <span class="day-badge">
@@ -72,6 +145,23 @@
 </div>
 
 
+<!-- ==================== PAGE ENVOI ==================== -->
+<div class="page" *ngIf="step() === 'sending'" @fadeInUp>
+  <div class="card card-sending" @slideIn>
+    <div class="card-inner">
+      <div class="sending-icon">
+        <i class="fa-solid fa-paper-plane"></i>
+      </div>
+      <h2 class="sending-title">On confirme tout ça...</h2>
+      <p class="sending-sub">Un instant, on prépare la surprise</p>
+      <div class="loader">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- ==================== PAGE OUI ==================== -->
 <div class="page page-yes" *ngIf="step() === 'oui'" @popIn>
 
@@ -91,7 +181,7 @@
     </div>
 
     <h1 class="yes-title">C'est officiel !</h1>
-    <p class="yes-sub">Tu as fait le bon choix Lael</p>
+    <p class="yes-sub">{{ prenom }}, tu as fait le bon choix</p>
 
     <div class="yes-message">
       <p>On se retrouve</p>
@@ -99,7 +189,7 @@
         <i class="fa-solid fa-calendar-check date-icon"></i>
         <span class="date-text">Ce Vendredi !</span>
       </div>
-      <p>J'ai hâte de passer ce moment avec toi</p>
+      <p>Je te recontacte très vite au <strong>{{ numero }}</strong></p>
     </div>
 
     <div class="details-grid">

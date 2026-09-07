@@ -1,10 +1,25 @@
-import { Component, signal, computed, HostListener, ElementRef } from '@angular/core'; // v21
+import { Component, signal, computed, HostListener, ElementRef, OnInit } from '@angular/core'; // v21
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { trigger, state, style, animate, transition, keyframes } from '@angular/animations';
+import emailjs from '@emailjs/browser';
+
+// ─── CONFIG EMAILJS ─────────────────────────────────────────────────────────
+// 1. Crée un compte sur https://www.emailjs.com (gratuit, 200 emails/mois)
+// 2. Ajoute un Email Service (Gmail, Outlook...)
+// 3. Crée 2 templates (voir instructions ci-dessous)
+// 4. Remplace les valeurs ici
+const EMAILJS_PUBLIC_KEY  = '6oZOy9HrIucymnprP';
+const EMAILJS_SERVICE_ID  = 'service_3gue00f';
+const TEMPLATE_TO_ME      = 'template_925lxgx';
+const TEMPLATE_TO_HER     = 'template_jzisuh6';
+
+const MY_EMAIL = 'eliphazguetin@gmail.com';
+// ────────────────────────────────────────────────────────────────────────────
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   animations: [
@@ -16,7 +31,7 @@ import { trigger, state, style, animate, transition, keyframes } from '@angular/
     trigger('fadeInUp', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(30px)' }),
-        animate('700ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        animate('600ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ])
     ]),
     trigger('slideIn', [
@@ -36,16 +51,25 @@ import { trigger, state, style, animate, transition, keyframes } from '@angular/
     ])
   ]
 })
-export class App {
-  step         = signal<'invite' | 'oui'>('invite');
+export class App implements OnInit {
+
+  // Pages : form → invite → sending → oui
+  step = signal<'form' | 'invite' | 'sending' | 'oui'>('form');
+
+  // Données du formulaire
+  prenom  = '';
+  numero  = '';
+  email   = '';
+  formError = '';
+
+  // Invitation
   heartState   = signal<'normal' | 'beat'>('normal');
   showConfetti = signal(false);
 
-  // Position du bouton "Non" (déplacement par rapport à sa position initiale)
+  // Fuite du bouton Non
   noBtnX = signal(0);
   noBtnY = signal(0);
 
-  // Icônes Font Awesome pour les confettis
   confettiIcons = [
     'fa-solid fa-heart',
     'fa-solid fa-star',
@@ -59,10 +83,31 @@ export class App {
 
   constructor(private el: ElementRef) {}
 
-  /**
-   * Détecte la position de la souris sur toute la page.
-   * Si la souris s'approche du bouton "Non", on le déplace à l'opposé.
-   */
+  ngOnInit() {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  }
+
+  // ── FORMULAIRE ──────────────────────────────────────────────────────────────
+
+  submitForm() {
+    this.formError = '';
+    if (!this.prenom.trim()) {
+      this.formError = 'Entre ton prénom pour continuer';
+      return;
+    }
+    if (!this.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email.trim())) {
+      this.formError = 'Adresse email invalide';
+      return;
+    }
+    if (!this.numero.trim() || !/^[\d\s\+\-\(\)]{6,15}$/.test(this.numero.trim())) {
+      this.formError = 'Numéro de téléphone invalide';
+      return;
+    }
+    this.step.set('invite');
+  }
+
+  // ── FUITE DU BOUTON NON ────────────────────────────────────────────────────
+
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
     if (this.step() !== 'invite') return;
@@ -77,34 +122,26 @@ export class App {
     const dx = event.clientX - btnCenterX;
     const dy = event.clientY - btnCenterY;
     const distance = Math.sqrt(dx * dx + dy * dy);
-
-    // Zone de répulsion : 120px autour du centre du bouton
     const repulseRadius = 120;
 
     if (distance < repulseRadius) {
-      const force = (repulseRadius - distance) / repulseRadius; // 0→1 quand on se rapproche
+      const force = (repulseRadius - distance) / repulseRadius;
       const escapeDistance = 160 * force;
-
-      // Direction opposée à la souris
       const angle = Math.atan2(dy, dx);
       const escapeX = -Math.cos(angle) * escapeDistance;
       const escapeY = -Math.sin(angle) * escapeDistance;
-
-      // Limites de l'écran
       const margin = 20;
-      const newX = this.clamp(
+
+      this.noBtnX.set(this.clamp(
         this.noBtnX() + (escapeX - this.noBtnX()) * 0.3,
-        -(btnCenterX - rect.width / 2 - margin),
-        window.innerWidth - btnCenterX - rect.width / 2 - margin
-      );
-      const newY = this.clamp(
+        -(btnCenterX - rect.width  / 2 - margin),
+        window.innerWidth  - btnCenterX - rect.width  / 2 - margin
+      ));
+      this.noBtnY.set(this.clamp(
         this.noBtnY() + (escapeY - this.noBtnY()) * 0.3,
         -(btnCenterY - rect.height / 2 - margin),
         window.innerHeight - btnCenterY - rect.height / 2 - margin
-      );
-
-      this.noBtnX.set(newX);
-      this.noBtnY.set(newY);
+      ));
     }
   }
 
@@ -112,7 +149,35 @@ export class App {
     return Math.min(Math.max(val, min), max);
   }
 
-  accept() {
+  // ── ACCEPTER ───────────────────────────────────────────────────────────────
+
+  async accept() {
+    this.step.set('sending');
+
+    try {
+      // Email à toi : elle a dit oui !
+      await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_TO_ME, {
+        to_email:    MY_EMAIL,
+        from_name:   this.prenom,
+        from_email:  this.email,
+        phone:       this.numero,
+        message:     `${this.prenom} a dit OUI pour le rendez-vous de vendredi !`,
+      });
+
+      // Email à elle : confirmation
+      await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_TO_HER, {
+        to_email:    this.email,
+        from_name:   this.prenom,
+        from_email:  this.email,
+        phone:       this.numero,
+        message:     `C'est officiel ${this.prenom}, rendez-vous vendredi ! On te recontacte très vite.`,
+      });
+
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      // On affiche quand même la page de confirmation
+    }
+
     this.showConfetti.set(true);
     this.step.set('oui');
     this.startHeartbeat();
