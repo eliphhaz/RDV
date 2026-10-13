@@ -170,7 +170,7 @@ export class App implements OnInit {
         from_name:   this.prenom,
         from_email:  this.email,
         phone:       this.numero,
-        message:     `C'est officiel ${this.prenom}, rendez-vous vendredi ! On te recontacte très vite.`,
+        message:     `C'est officiel ${this.prenom} alias Juliette, rendez-vous vendredi ! Je te recontacte très vite.`,
       });
 
     } catch (err) {
